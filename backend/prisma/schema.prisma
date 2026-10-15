@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "sqlite"
+  url = env("DATABASE_URL")
+}
+model User {
+  id String @id
+  name String
+  email String @unique
+  passwordHash String
+  role String
+  clientId String? @unique
+}
+model Client {
+  id String @id
+  trainerId String
+  name String
+  sex String?
+  age Int?
+  heightCm Float?
+  weightKg Float?
+  conditions String
+  goals String
+  equipment String
+  schedule String
+  experience String?
+  phase Int @default(1)
+  nextRetest String?
+  compositionConsent Boolean @default(false)
+  compositionFrequencyWeeks Int @default(6)
+  measurements Measurement[]
+  assessments Assessment[]
+  plans Plan[]
+  sessions TrainingSession[]
+}
+model Measurement {
+  id String @id @default(cuid())
+  clientId String
+  client Client @relation(fields:[clientId],references:[id],onDelete:Cascade)
+  key String
+  value Float
+  unit String
+  date String
+  responsible String
+  notes String @default("")
+  meaning String?
+  device String?
+  conditions String?
+  protocol String?
+  @@index([clientId,date])
+}
+model Assessment {
+  id String @id @default(cuid())
+  clientId String
+  client Client @relation(fields:[clientId],references:[id],onDelete:Cascade)
+  key String
+  status String
+  value Float?
+  unit String?
+  date String
+  responsible String
+  notes String @default("")
+  protocol String?
+  kind String
+  @@index([clientId,date])
+}
+model Plan {
+  id String @id @default(cuid())
+  clientId String
+  client Client @relation(fields:[clientId],references:[id],onDelete:Cascade)
+  title String
+  status String @default("draft")
+  startDate String
+  weeks String
+  fitt String
+  weeklySchedule String
+  notes String @default("")
+  source String @default("trainer")
+  approvedAt String?
+  approvedBy String?
+  sessions TrainingSession[]
+  @@index([clientId])
+}
+model TrainingSession {
+  id String @id @default(cuid())
+  clientId String
+  client Client @relation(fields:[clientId],references:[id],onDelete:Cascade)
+  planId String?
+  plan Plan? @relation(fields:[planId],references:[id],onDelete:SetNull)
+  date String
+  status String
+  durationMinutes Int?
+  rpe Int?
+  fatigue Int?
+  motivation Int?
+  notes String @default("")
+  exercises String
+  trainerNotes String?
+  @@index([clientId,date])
+}

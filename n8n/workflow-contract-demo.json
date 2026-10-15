@@ -1,0 +1,85 @@
+{
+  "name": "OLIMPIC · comprobar contrato sin modelo",
+  "active": false,
+  "nodes": [
+    {
+      "id": "demo-webhook",
+      "name": "Solicitud autorizada",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "olimpic-demo",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "demo-response",
+      "name": "Validar y responder sin modelo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        280,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const b=$json.body;if(!b||b.consent!==true||b.syntheticDataOnly!==true||typeof b.message!=='string')throw new Error('Solicitud no autorizada.');return [{json:{reply:'Conexión n8n verificada con datos sintéticos. Esta plantilla de contrato no consulta ningún modelo.',missingData:Array.isArray(b.context?.missingData)?b.context.missingData:[]}}];"
+      }
+    },
+    {
+      "id": "demo-respond",
+      "name": "Responder al backend",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        560,
+        0
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 200
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Solicitud autorizada": {
+      "main": [
+        [
+          {
+            "node": "Validar y responder sin modelo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar y responder sin modelo": {
+      "main": [
+        [
+          {
+            "node": "Responder al backend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "saveManualExecutions": false
+  },
+  "pinData": {},
+  "tags": []
+}

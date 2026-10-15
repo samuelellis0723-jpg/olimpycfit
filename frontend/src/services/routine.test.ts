@@ -1,0 +1,5 @@
+import {describe,it,expect} from 'vitest';
+import {cycleTiming,dayName,sessionForDate} from './routine';
+import {makePlan} from '../features/trainer/PlanEditor';
+import type {Session} from '../types';
+describe('Rutina vigente y registro sin duplicación',()=>{const plan={...makePlan('c'),id:'p',startDate:'2026-10-12'};it('distingue inicio, semanas y fin del ciclo',()=>{expect(cycleTiming(plan,'2026-10-11').future).toBe(true);expect(cycleTiming(plan,'2026-10-12').weekIndex).toBe(0);expect(cycleTiming(plan,'2026-10-19').weekIndex).toBe(1);expect(cycleTiming(plan,'2026-11-23').finished).toBe(true)});it('obtiene el día civil de Costa Rica',()=>{expect(dayName('2026-10-14')).toBe('Miércoles')});it('reutiliza la sesión del mismo plan y fecha, ignorando otras',()=>{const list=[{id:'other',planId:'other',date:'2026-10-14'},{id:'same',planId:'p',date:'2026-10-14'}] as Session[];expect(sessionForDate(list,'p','2026-10-14')?.id).toBe('same');expect(sessionForDate(list,'p','2026-10-15')).toBeUndefined()})});
