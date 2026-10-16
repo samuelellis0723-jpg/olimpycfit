@@ -16,16 +16,16 @@ La aplicación usa cuentas y datos sintéticos. La autenticación y SQLite local
 | --- | --- | --- | --- | --- |
 | Base | Migración SQLite, carga inicial, login/logout, sesión y rutas protegidas | Sí | H1: migración/semilla/build, tests y navegación correctos; detalle abajo | Autenticación y despliegue de producción |
 | Privacidad | Entrenador sólo accede a clientes asignados; cliente sólo a sus datos, incluidas mutaciones | Sí, rutas actuales | H1: aislamiento de lectura HTTP verificado; pruebas de mutaciones añadidas en H2 | Evaluación institucional de privacidad antes de datos reales |
-| Mediciones | Campos solicitados; fecha, responsable, unidades, observaciones y valores opcionales | Sí | Catálogo 24 + 9 y persistencia verificados; H2 R3 peso pendiente | Definir profesionalmente las etiquetas ambiguas |
-| Cálculos | Conversión lb/kg, IMC, ICC, 1RM estimado y porcentaje, con datos válidos | Sí | Fórmulas y ausencia de datos verificadas; formulario lb en R3 | Interpretación individual por profesional |
+| Mediciones | Campos solicitados; fecha, responsable, unidades, observaciones y valores opcionales | Sí | Catálogo 24 + 9, persistencia y H2 R3 peso correctos | Definir profesionalmente las etiquetas ambiguas |
+| Cálculos | Conversión lb/kg, IMC, ICC, 1RM estimado y porcentaje, con datos válidos | Sí | Fórmulas, ausencia de datos y formulario lb verificados | Interpretación individual por profesional |
 | Cinco fases | Evaluación, planificación, prescripción, seguimiento y retest, con estados | Sí | Cinco fases y estados en catálogo/UI; formularios recorridos | Validación de protocolos de cada prueba |
 | Rutinas y sesiones | Seis semanas, detalle de ejercicios, registro y comparación planeado/realizado | Sí | Recorridos de entrenador y cliente; edición móvil de plan en corrección final | Revisión profesional de prescripción y técnica |
-| Asistente | Demo sin conexión; sesión y validación; consentimiento para envío externo; aprobación del entrenador | Sí | UI demo y borrador verificadas; backend final pendiente de resultado | Configurar credenciales, proveedor y revisar sus condiciones |
-| n8n | Contrato backend/webhook, timeout, HTTP y respuesta malformada | Sí | Pendiente de resultado de pruebas finales del backend | Importar y ejecutar plantilla en una instancia y versión identificadas |
+| Asistente | Demo sin conexión; sesión y validación; consentimiento para envío externo; aprobación del entrenador | Sí | UI demo y borrador correctos; consentimiento, minimización y errores verificados en backend | Configurar credenciales, proveedor y revisar sus condiciones |
+| n8n | Contrato backend/webhook, timeout, HTTP y respuesta malformada | Sí | Contrato simulado y plantillas comprobados dentro de 23 tests backend | Importar y ejecutar plantilla en una instancia y versión identificadas |
 | Anatomía educativa | Frente/espalda, principales/secundarios, teclado y nombres accesibles | Sí | SVG y teclado comprobados en suite central | Revisión anatómica profesional; no es diagnóstico |
-| Accesibilidad | Contraste, foco, etiquetas, teclado, reflow y movimiento reducido | Sí | Axe 4/4 y pruebas de teclado/movimiento correctas en R2; revisión final en curso | Conformidad WCAG 2.2 AA pendiente de revisión manual con lector de pantalla |
+| Accesibilidad | Contraste, foco, etiquetas, teclado, reflow y movimiento reducido | Sí | Cuatro casos axe/teclado verificados entre R3 completa y cierre dirigido | Conformidad WCAG 2.2 AA pendiente de revisión manual con lector de pantalla |
 | Responsive | Recorrido real en escritorio y móvil, sin controles decorativos | Sí | Recorridos reales realizados; defecto de intercepción móvil en corrección | Pruebas con dispositivos físicos y personas usuarias |
-| Documentación | Instrucciones, contratos, decisiones, fuentes y limitaciones alineadas con código | En construcción | Pendiente de auditoría final | Revisión legal/institucional antes de producción |
+| Documentación | Instrucciones, contratos, decisiones, fuentes y limitaciones alineadas con código | Sí | Contratos, comandos, resultados y límites actualizados al cierre | Revisión legal/institucional antes de producción |
 
 ## Fuentes primarias consultadas
 
@@ -80,11 +80,11 @@ Cada hito tiene un máximo de tres rondas. Una observación sólo cuenta como ha
 | Hito | Rondas usadas | Evidencia ejecutada | Hallazgos y resolución | Resultado |
 | --- | --- | --- | --- | --- |
 | 1. Base | 2/3 | Árbitro: 17/17 HTTP; constructor: generate/migrate/seed/build correctos, Vitest 12 backend + 6 frontend y Playwright 8/8 | H1-01: creación de SQLite ausente corregida con helper no destructivo; reevaluada en R2 | Aprobado para alcance de demostración |
-| 2. Perfil, mediciones y fases | 3/3, última ronda en curso | R2: 18 comprobaciones + Vitest H2 8/8; constructor: entrenador Playwright 6/6 | H2-07 corregido con step any; ejecución independiente R3 interrumpida sin resultado; prueba dedicada creada | R3 pendiente de ejecución central; no hay cuarta ronda |
+| 2. Perfil, mediciones y fases | 3/3 | R2: 18 comprobaciones + Vitest H2 8/8; R3: peso 2/2 y entrenador 6/6 | H2-07 corregido con step any; guardado, recarga y restauración confirmados | Aprobado en alcance demo |
 | 3. Vista del cliente | 1/3 | Constructor: dos recorridos de cliente correctos, escritorio/móvil, dentro de client-assistant 4/4 | Registro, actualización sin duplicado, persistencia y detalle de técnica verificados | Aprobado en software para alcance demo; revisión profesional pendiente |
-| 4. Asistente y n8n | 1/3 | Constructor: dos recorridos de asistente demo correctos, escritorio/móvil, dentro de client-assistant 4/4 | Propuesta de seis semanas permanece draft y requiere revisión; integración real sin credenciales | Auditoría final de backend pendiente; n8n real no verificado |
+| 4. Asistente y n8n | 2/3 | Demo 2/2; contrato y errores dentro de 23 pruebas backend correctas; revisión independiente de código | Catálogo mínimo conservado, cargas sin respaldo retiradas, propuestas siempre draft | Software aprobado; n8n real no verificado |
 | 5. Ilustraciones musculares | 1/3 | Constructor: suite de accesibilidad verifica dos vistas, diez controles, Enter/Espacio, foco y movimiento reducido | Sin defecto de software reportado en SVG; no se realizó revisión anatómica profesional | Aprobado en software; anatomía y lector de pantalla pendientes |
-| 6. Estilo, accesibilidad y documentos | 2/3 | Constructor: axe 4/4; suite global R2 23/26 correctas | Dos fallos de datos/selectores de prueba y un defecto móvil: contenido intercepta Guardar borrador; corrección en curso | R3 final pendiente; lector de pantalla pendiente |
+| 6. Estilo, accesibilidad y documentos | 3/3 | R3 completa 26/28; cierre dirigido móvil 2/2 después del ajuste | Corregidos contraste, desbordamiento móvil y foco de regiones de tabla | Alcance automático aprobado; lector de pantalla pendiente |
 
 ## Pendientes externos permanentes de esta demostración
 
@@ -135,9 +135,9 @@ Comando independiente: `npm run test -w backend -- -t 'Hito 2'`: **8 pruebas cor
 
 ### Hito 2 — Ronda 3 interrumpida y continuación
 
-Actualización **2026-10-15**. El comando independiente de navegador de esta ronda quedó interrumpido por el usuario y no devolvió ninguna salida ni identificador de proceso recuperable. Por tanto, **no se declara que el peso haya sido guardado, verificado o restaurado por ese comando**. Su código incluía restauración en finally, pero no existe evidencia de que se ejecutara.
+Actualización **2026-10-15**. El comando independiente de navegador de esta ronda se interrumpió al recuperar una herramienta bloqueada y no devolvió ninguna salida ni identificador de proceso recuperable. Por tanto, **no se declara que el peso haya sido guardado, verificado o restaurado por ese comando**. Su código incluía restauración en finally, pero no existe evidencia de que se ejecutara.
 
-Se creó `tests/profile-weight.spec.ts` para que el constructor central continúe la **misma tercera ronda**, sin una cuarta: valida el cambio automático a lb, guarda 120,5 lb como 54,658880585 kg, comprueba persistencia tras recarga y restaura únicamente `weightKg` original mediante API en finally. Adjunta evidencia JSON por proyecto. A la hora de esta actualización, la prueba estaba creada y **no ejecutada**.
+Se creó `tests/profile-weight.spec.ts` para que el constructor central continúe la **misma tercera ronda**, sin una cuarta: valida el cambio automático a lb, guarda 120,5 lb como 54,658880585 kg, comprueba persistencia tras recarga y restaura únicamente `weightKg` original mediante API en finally. Adjunta evidencia JSON por proyecto. El constructor la ejecutó en la suite central final: **2/2 correctas**, escritorio y móvil, con evidencia de restauración adjunta. H2 cierra su tercera ronda sin defecto abierto de este alcance.
 
 Evidencia adicional comunicada por el constructor: `tests/trainer.spec.ts`, **6/6 correctas en escritorio/móvil**, guarda medición con protocolo y evaluación, crea seis semanas, aprueba el plan y muestra datos del informe sin desbordamiento. Los fallos previos de selección de controles se corrigieron en los selectores de prueba; no se registran como defectos adicionales del producto.
 
@@ -151,6 +151,20 @@ La suite `tests/accessibility.spec.ts` recorre las pantallas principales y el de
 
 R1 detectó contraste insuficiente en fondos de acceso, hero/calendario y números de fase, además de una lista de fases desplazable sin acceso al foco. Se corrigió el producto sin desactivar reglas axe.
 
-En R2, el constructor comunicó **4/4 casos de accesibilidad correctos** (escritorio/móvil). El resultado de su suite global fue **23/26 correctos**, no una aprobación completa: dos fallos correspondían a notas de prueba no únicas y uno a un defecto real móvil donde contenido del editor interceptaba el botón «Guardar borrador». Las correcciones y la tercera ronda final están pendientes de resultado. Los dos recorridos específicos de seguimiento del entrenador también fueron comunicados como correctos.
+En R2, el constructor comunicó **4/4 casos de accesibilidad correctos** (escritorio/móvil). El resultado de su suite global fue **23/26 correctos**, no una aprobación completa: dos fallos correspondían a notas de prueba no únicas y uno a un defecto real móvil donde contenido del editor interceptaba el botón «Guardar borrador». Esos hallazgos se corrigieron y se comprobaron en la tercera ronda descrita a continuación. Los dos recorridos específicos de seguimiento del entrenador también fueron comunicados como correctos.
 
 La conformidad completa con WCAG 2.2 AA sigue **pendiente de revisión manual con lector de pantalla**. Axe y las simulaciones de teclado no verifican por sí solas todos los criterios o necesidades de las personas usuarias.
+
+### Cierre del 2026-10-15 — H4 R2 y H6 R3
+
+`npm run build` y `npm test`: salida 0; **23 pruebas backend y 16 frontend correctas**. La integración n8n está en `backend/src/integrations/n8n/client.ts`. La revisión independiente de H4 confirmó consentimiento antes de fetch, token sólo en servidor, HTTPS/loopback, prohibición de redirecciones, timeout, límite de respuesta, validación estricta y borrador. Los tests verificaron además que el catálogo conserva exerciseId/label y que una carga externa de 499 kg sin referencia se retira.
+
+Se verificaron normalización mm→cm, planes aprobados inmutables y coherencia de sesiones incluso con PATCH parcial. Las pruebas de n8n usan fetch simulado: no constituyen ejecución real del flujo. Las tres plantillas pasan validación estructural y su guardia de consentimiento se ejecuta como JavaScript.
+
+H6 R3: `npm run test:e2e` ejecutó 28 casos y terminó con **26 correctos, dos fallidos**. Los 24 casos funcionales pasaron, incluidos guardar plan en móvil, peso kg/lb, programación por fecha y persistencia de ejercicios. Los dos fallos fueron axe móvil: regiones de tablas desplazables sin foco en mediciones, evaluaciones, seguimiento e historial. Se añadieron tabIndex, nombre de región y foco visible. Para comprobar ese hallazgo se ejecutó `npm run test:e2e -- tests/accessibility.spec.ts --project=mobile --reporter=list --output=test-results/accessibility-closure`: **2/2 correctos, salida 0**. También se repitieron build frontend y sus 16 tests con salida 0.
+
+No se afirma que la última suite completa haya terminado 28/28: la evidencia de cierre combina sus 26 casos correctos con la comprobación dirigida de los dos corregidos. No se abrió una cuarta ronda ni se desactivaron reglas axe. No quedan defectos conocidos pendientes de los recorridos ejecutados; pueden existir estados no cubiertos.
+
+`npm audit`: **0 vulnerabilidades** reportadas. `git diff --check` no detectó errores de whitespace en la comprobación. Capturas del panel de escritorio y detalle muscular móvil revisadas visualmente. El peso original se restauró; las demás pruebas conservan sus registros sintéticos en demo.db y el seed no los elimina.
+
+La ejecución se limita a Windows/Chrome y móvil emulado. Quedan pendientes n8n/modelo reales, dispositivos físicos, lector de pantalla y revisión profesional. No se realizaron ramas, commits, PR ni publicaciones.

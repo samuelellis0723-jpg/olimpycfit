@@ -1,4 +1,5 @@
 .stack{grid-template-columns:minmax(0,1fr)}
+.table-wrap:focus-visible{outline:3px solid var(--red);outline-offset:3px}
 .stack>*,.card,.form-grid,.exercise-fields,.session-exercise-fields,.week-switch,.actions{min-width:0;max-width:100%}
 .form-grid>*,.exercise-fields>*,.session-exercise-fields>*,.fitt-grid>*,label{min-width:0}
 input,select,textarea{min-width:0;max-width:100%}
