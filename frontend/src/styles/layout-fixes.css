@@ -1,0 +1,6 @@
+.stack{grid-template-columns:minmax(0,1fr)}
+.stack>*,.card,.form-grid,.exercise-fields,.session-exercise-fields,.week-switch,.actions{min-width:0;max-width:100%}
+.form-grid>*,.exercise-fields>*,.session-exercise-fields>*,.fitt-grid>*,label{min-width:0}
+input,select,textarea{min-width:0;max-width:100%}
+.copy-week .button{max-width:100%;white-space:normal;text-align:center}
+@media(max-width:760px){input,select,textarea{font-size:1rem}.actions{align-items:stretch}.actions .button{min-width:0;white-space:normal;text-align:center}}

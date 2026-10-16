@@ -6,4 +6,7 @@ import {AuthProvider} from './app/auth';
 import './styles/global.css';
 import './styles/features.css';
 import './styles/client.css';
+import './styles/refinements.css';
+import './styles/accessibility.css';
+import './styles/layout-fixes.css';
 createRoot(document.getElementById('root')!).render(<StrictMode><BrowserRouter><AuthProvider><App/></AuthProvider></BrowserRouter></StrictMode>);

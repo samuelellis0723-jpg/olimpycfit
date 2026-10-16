@@ -1,0 +1,86 @@
+import { test, expect } from '@playwright/test';
+import type { Plan, Session } from '../frontend/src/types';
+
+test('Entrenador programa el día prescrito y persiste cargas, estado y observaciones', async ({ page }, info) => {
+  await page.request.post('/api/auth/login', { data: { email: 'trainer@demo.local', password: 'Demo123!' } });
+  const plans = await (await page.request.get('/api/clients/client-ana/plans')).json() as { plans: Plan[] };
+  const plan = plans.plans.find(item => item.id === 'plan-ana-base');
+  expect(plan).toBeDefined();
+  const weekIndex = info.project.name === 'mobile' ? 5 : 4;
+  const expectedDay = plan!.weeks[weekIndex].days.find(day => day.day === 'Miércoles')!;
+  const start = new Date(`${plan!.startDate}T12:00:00Z`);
+  start.setUTCDate(start.getUTCDate() + weekIndex * 7 + 2);
+  const date = start.toISOString().slice(0, 10);
+  const rest = new Date(start);
+  rest.setUTCDate(rest.getUTCDate() - 1);
+  const before = await (await page.request.get('/api/clients/client-ana/sessions')).json() as { sessions: Session[] };
+  await page.goto('/trainer/clients/client-ana?tab=progress');
+  await expect(page.getByRole('heading', { name: 'Reservar el siguiente paso', exact: true })).toBeVisible();
+  await page.getByRole('combobox', { name: 'Plan de referencia', exact: true }).selectOption(plan!.id);
+  await page.getByLabel('Fecha de la sesión', { exact: true }).fill(rest.toISOString().slice(0, 10));
+  await page.getByRole('button', { name: 'Programar sesión', exact: true }).click();
+  await expect(page.getByRole('alert')).toContainText('no tiene una sesión prescrita');
+  const afterRejected = await (await page.request.get('/api/clients/client-ana/sessions')).json() as { sessions: Session[] };
+  expect(afterRejected.sessions).toHaveLength(before.sessions.length);
+
+  await page.getByLabel('Fecha de la sesión', { exact: true }).fill(date);
+  const creationResponse = page.waitForResponse(response => response.url().endsWith('/api/clients/client-ana/sessions') && response.request().method() === 'POST');
+  await page.getByRole('button', { name: 'Programar sesión', exact: true }).click();
+  const createdResponse = await creationResponse;
+  expect(createdResponse.ok()).toBeTruthy();
+  const { session: created } = await createdResponse.json() as { session: Session };
+  expect(created.planId).toBe(plan!.id);
+  expect(created.date).toBe(date);
+  expect(created.exercises.map(({ exerciseId, sets, reps, loadKg }) => ({ exerciseId, sets, reps, loadKg: loadKg ?? null })))
+    .toEqual(expectedDay.exercises.map(({ exerciseId, sets, reps, loadKg }) => ({ exerciseId, sets, reps, loadKg: loadKg ?? null })));
+  expect(created.exercises.every(exercise => !exercise.completed)).toBeTruthy();
+  await expect(page.getByRole('status')).toContainText('Sesión añadida');
+  await page.reload();
+  const history = page.locator(`details[data-session-id="${created.id}"]`);
+  await history.locator('summary').click();
+  await history.getByRole('button', { name: 'Editar seguimiento', exact: true }).click();
+  const editor = page.locator('form').filter({ has: page.getByRole('heading', { name: 'Seguimiento de la sesión', exact: true }) });
+  const note = `Seguimiento E2E ${info.project.name} ${Date.now()}`;
+  await editor.getByRole('combobox', { name: 'Estado', exact: true }).selectOption('completed');
+  await editor.getByLabel('Series realizadas', { exact: true }).first().fill('4');
+  await editor.getByLabel('Repeticiones o tiempo', { exact: true }).first().fill('8');
+  await editor.getByLabel('Carga utilizada (kg)', { exact: true }).first().fill('12.5');
+  await editor.getByRole('checkbox', { name: 'Completado', exact: true }).first().check();
+  await editor.getByLabel('Observación del ejercicio', { exact: true }).first().fill(note);
+  await editor.getByLabel('Esfuerzo percibido (0–10)', { exact: true }).fill('6');
+  await editor.getByRole('textbox', { name: 'Observaciones del entrenador: técnica, fatiga y adherencia', exact: true }).fill(note);
+  await editor.getByRole('button', { name: 'Guardar seguimiento', exact: true }).click();
+  await expect(page.getByRole('status')).toContainText('Seguimiento de sesión guardado');
+  const saved = await (await page.request.get('/api/clients/client-ana/sessions')).json() as { sessions: Session[] };
+  const actual = saved.sessions.find(session => session.id === created.id)!;
+  expect(actual.status).toBe('completed');
+  expect(actual.rpe).toBe(6);
+  expect(actual.trainerNotes).toBe(note);
+  expect(actual.exercises[0]).toMatchObject({ sets: 4, reps: '8', loadKg: 12.5, completed: true, notes: note });
+  expect(saved.sessions).toHaveLength(before.sessions.length + 1);
+
+  await page.reload();
+  await history.locator('summary').click();
+  await history.getByRole('button', { name: 'Editar seguimiento', exact: true }).click();
+  await editor.getByRole('combobox', { name: 'Estado', exact: true }).selectOption('missed');
+  await expect(editor.getByRole('checkbox', { name: 'Completado', exact: true }).first()).not.toBeChecked();
+  await expect(editor.getByRole('checkbox', { name: 'Completado', exact: true }).first()).toBeDisabled();
+  await editor.getByRole('button', { name: 'Guardar seguimiento', exact: true }).click();
+  await expect(page.getByRole('status')).toContainText('Seguimiento de sesión guardado');
+  const missed = await (await page.request.get('/api/clients/client-ana/sessions')).json() as { sessions: Session[] };
+  const final = missed.sessions.find(session => session.id === created.id)!;
+  expect(final.status).toBe('missed');
+  expect(final.exercises.every(exercise => !exercise.completed)).toBeTruthy();
+  expect(missed.sessions).toHaveLength(before.sessions.length + 1);
+});
+
+test('Una fecha imposible en la URL vuelve a hoy sin romper la rutina', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.request.post('/api/auth/login', { data: { email: 'client@demo.local', password: 'Demo123!' } });
+  await page.goto('/client/routine?date=2026-99-99');
+  await expect(page.getByRole('heading', { name: 'Mi entrenamiento.', exact: true })).toBeVisible();
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Costa_Rica', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+  await expect(page.getByLabel('Fecha de la sesión', { exact: true })).toHaveValue(today);
+  expect(errors).toEqual([]);
+});

@@ -37,7 +37,9 @@ Bioimpedancia: peso total (lb), grasa corporal (%), masa musculoesquelética (lb
 
 El uso de `repeticiones/30` aproxima el coeficiente 0.0333 de la fórmula Epley. Por ejemplo, 100 kg × 5 repeticiones da 116.67 kg estimados. No se extrapola a repeticiones arbitrarias ni se aplica a otro ejercicio. No se prescriben cargas automáticamente cuando faltan datos.
 
-Los valores canónicos del perfil son kg y cm. La API convierte las mediciones de masa recibidas en libras a kg al guardarlas; no conserva por separado la cifra original en libras. Las demás unidades admitidas se conservan. Se muestran fecha, unidad y procedencia de los datos utilizados, y se distingue entre medición, estimación y cálculo. El ICC exige fecha y protocolo iguales; el modelo no diferencia dos tomas del mismo día con idéntico protocolo, por lo que el responsable debe usar una referencia de protocolo suficientemente específica.
+Los valores canónicos del perfil son kg y cm. La API convierte las mediciones recibidas en libras a kg y en milímetros a cm al guardarlas; no conserva por separado la cifra original. Las demás unidades admitidas se conservan. La conversión no redefine una etiqueta ambigua: su significado sigue siendo obligatorio. Se muestran fecha, unidad y procedencia de los datos utilizados, y se distingue entre medición, estimación y cálculo. El ICC exige fecha y protocolo iguales; el modelo no diferencia dos tomas del mismo día con idéntico protocolo, por lo que el responsable debe usar una referencia de protocolo suficientemente específica.
+
+Los planes aprobados son inmutables. Para adaptar uno, el entrenador crea y revisa un nuevo borrador; las sesiones históricas conservan el plan original. La rutina vigente es la aprobada más reciente cuyo inicio ya ocurrió y cuyas seis semanas no han terminado. Las sesiones planificadas o no realizadas no admiten ejercicios marcados como completados, también al actualizar parcialmente por API.
 
 ## Evaluaciones y retests
 

@@ -7,16 +7,17 @@ async function trainer(page: Page) {
 }
 
 test('Entrenador guarda medición con procedencia y evaluación realizada', async ({ page }, info) => {
+  const note = `Recorrido E2E ${info.project.name} ${Date.now()}`;
   await trainer(page);
   await page.getByRole('tab', { name: 'Mediciones', exact: true }).click();
   await page.getByRole('combobox', { name: 'Medición', exact: true }).selectOption('foot_length');
   await page.getByLabel('Valor medido', { exact: true }).fill('25.5');
   await page.getByLabel(/^Protocolo y método de medición/).fill('Regla, talón al dedo más largo');
-  await page.getByLabel('Observaciones', { exact: true }).fill(`Recorrido E2E ${info.project.name}`);
+  await page.getByLabel('Observaciones', { exact: true }).fill(note);
   await page.getByRole('button', { name: 'Guardar medición', exact: true }).click();
   await expect(page.getByRole('status')).toContainText('Medición guardada');
   await page.reload();
-  await expect(page.getByRole('cell', { name: new RegExp(`Recorrido E2E ${info.project.name}`) })).toBeVisible();
+  await expect(page.getByRole('cell', { name: new RegExp(note) })).toBeVisible();
   await page.getByRole('tab', { name: 'Evaluaciones', exact: true }).click();
   await page.getByRole('combobox', { name: 'Prueba o evaluación', exact: true }).selectOption('plank');
   await page.getByRole('combobox', { name: 'Estado', exact: true }).selectOption('completed');
@@ -43,6 +44,7 @@ test('Entrenador crea seis semanas y publica después de revisar', async ({ page
   await page.getByRole('combobox', { name: 'Ejercicio', exact: true }).selectOption({ index: 1 });
   await page.getByLabel('Justificación vinculada al objetivo', { exact: true }).fill('Práctica del movimiento para el objetivo sintético registrado.');
   await page.getByRole('button', { name: 'Copiar sesiones a las otras 5 semanas', exact: true }).click();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   await page.getByRole('button', { name: 'Guardar borrador', exact: true }).click();
   await expect(page.getByRole('status')).toContainText('Borrador guardado');
   const card = page.locator('section.card').filter({ has: page.getByRole('heading', { name: title, exact: true }) });

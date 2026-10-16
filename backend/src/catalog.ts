@@ -72,6 +72,11 @@ export const testCatalog=[
   {key:'side_plank',label:'Plancha lateral',unit:'s',notice:'Registrar lado, apoyos y criterio de finalización.'}
 ];
 export function canonicalWeight(value:number,unit:string):number{return unit==='lb'?value*0.45359237:value;}
+export function canonicalMeasurement(value:number,unit:string):{value:number;unit:string}{
+  if(unit==='lb')return {value:canonicalWeight(value,unit),unit:'kg'};
+  if(unit==='mm')return {value:value/10,unit:'cm'};
+  return {value,unit};
+}
 export function bmi(weightKg:number|null|undefined,heightCm:number|null|undefined):number|null{return weightKg!=null&&heightCm!=null&&weightKg>0&&heightCm>0?weightKg/((heightCm/100)**2):null;}
 export function waistHipRatio(waistCm:number|null|undefined,hipCm:number|null|undefined):number|null{return waistCm!=null&&hipCm!=null&&waistCm>0&&hipCm>0?waistCm/hipCm:null;}
 export function epley5RM(loadKg:number|null|undefined,repetitions=5):number|null{return loadKg!=null&&loadKg>0&&repetitions===5?loadKg*(1+5/30):null;}

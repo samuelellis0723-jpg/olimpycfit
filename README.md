@@ -23,7 +23,7 @@ En macOS/Linux, copiar backend/.env.example a backend/.env si no existe y usar l
 
 Abrir **http://127.0.0.1:5173**. API local: http://127.0.0.1:3001/api/health. Ctrl+C detiene ambos procesos. Los datos persisten en backend/prisma/demo.db; las sesiones de acceso se reinician con el backend.
 
-`db:migrate` aplica las migraciones versionadas y crea el archivo SQLite si falta, sin truncar uno existente. **`db:seed` reinicia los datos ficticios y elimina los cambios realizados durante la exploración.** No usar esta base ni estos comandos con datos reales.
+`db:migrate` aplica las migraciones versionadas y crea el archivo SQLite si falta, sin truncar uno existente. `db:seed` es idempotente: crea los registros ficticios que faltan y actualiza las contraseñas demo; conserva los cambios y registros existentes. El escenario inicial abarca septiembre–noviembre de 2026. Al terminar el ciclo, el entrenador debe publicar uno nuevo. No usar esta base ni estos comandos con datos reales.
 
 ## Cuentas ficticias
 
@@ -52,7 +52,7 @@ npm run test:e2e
 npm audit
 ```
 
-Vitest utiliza backend/prisma/test.db. Playwright inicia servidores locales si no hay una instancia activa, usa Chrome en escritorio y viewport móvil y guarda capturas/trazas. Las pruebas de navegador escriben registros ficticios; ejecutar db:seed para volver al escenario inicial.
+Vitest utiliza backend/prisma/test.db. Playwright inicia servidores locales si no hay una instancia activa, usa Chrome en escritorio y viewport móvil y guarda capturas/trazas. Las pruebas de navegador escriben registros ficticios identificados como E2E y propuestas en la base de demostración. `db:seed` no los elimina.
 
 Si Chrome no está instalado, instalarlo o adaptar el canal en playwright.config.ts a un navegador disponible. Emular móvil en Chromium no demuestra compatibilidad con Safari ni sustituye dispositivos físicos.
 

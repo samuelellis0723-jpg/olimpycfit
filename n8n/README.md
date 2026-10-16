@@ -7,7 +7,7 @@ El backend ofrece `GET /api/assistant/status` y `POST /api/assistant` con `{clie
 ## Plantillas incluidas
 
 - `workflow-contract-demo.json`: comprueba la conexión backend → n8n sin consultar un modelo.
-- `workflow-assistant.json`: n8n recibe el contexto autorizado, llama a un modelo local por la API de Ollama, valida JSON y responde al backend. Se entrega inactivo y sin credenciales.
+- `workflows/fitness-assistant.template.json` (copia compatible: `workflow-assistant.json`): n8n recibe el contexto autorizado, llama a un modelo local por la API de Ollama, valida JSON y responde al backend. Se entrega inactivo y sin credenciales.
 
 Importa la plantilla elegida en una instancia local de n8n. En el nodo Webhook selecciona una credencial **Header Auth** con nombre de cabecera `Authorization` y valor `Bearer <token-local>`. Guarda el mismo token sólo en `backend/.env` como `N8N_WEBHOOK_TOKEN`. La exportación no contiene tokens ni IDs de credenciales.
 
@@ -19,11 +19,11 @@ La plantilla desactiva el guardado de ejecuciones exitosas, fallidas y manuales.
 
 ## Datos y contrato
 
-Se envían una referencia aleatoria de solicitud, la consulta redactada, objetivo, equipo, disponibilidad y fase; para progreso se añaden cambios comparables sin identidad; para una propuesta puede adjuntarse la estructura de una rutina vigente. Se omiten nombre de cliente, correo, IDs de cliente/entrenador, condiciones de salud, notas profesionales, notas de ejercicios, contraseñas y tokens. La redacción automática de texto libre es limitada: no convierte datos reales en datos anónimos. La demostración no admite información real de salud.
+Se envían una referencia aleatoria de solicitud, la consulta redactada, objetivo, equipo, disponibilidad, fase y una bandera que indica si hay limitaciones declaradas (sin su detalle); para progreso se añaden cambios comparables sin identidad; para una propuesta puede adjuntarse la estructura de una rutina vigente. Se omiten nombre de cliente, correo, IDs de cliente/entrenador, condiciones de salud, notas profesionales, notas de ejercicios, contraseñas y tokens. La redacción automática de texto libre es limitada: no convierte datos reales en datos anónimos. La demostración no admite información real de salud.
 
 Respuesta de n8n: `{reply:string,missingData:string[],proposal?:PlanInput}`. `reply` tiene máximo 8000 caracteres y toda la respuesta está limitada a 64 KiB. `PlanInput` usa el contrato de `backend/src/validation.ts`: seis semanas, fases 1–3, días españoles, ejercicios del catálogo, FITT, motivo por ejercicio y cargas sólo si existen. No admite `id`, `clientId`, `status`, `approvedAt` ni `approvedBy`. Los datos faltantes deben quedar ausentes o `null`.
 
-El backend valida nuevamente la respuesta y guarda cualquier propuesta como `draft`, con `source: assistant`. Sólo el entrenador propietario puede aprobarla. Editar una rutina aprobada revoca su aprobación. Una respuesta inválida, un error de red o un timeout no crea una propuesta. No se reintenta automáticamente para evitar envíos duplicados sin un nuevo consentimiento.
+El backend valida nuevamente la respuesta y guarda cualquier propuesta como `draft`, con `source: assistant`. Sólo el entrenador propietario puede aprobarla. Las rutinas aprobadas son inmutables: para adaptarlas se crea un nuevo borrador y se conserva el historial. Las cargas externas sin coincidencia en el mismo ejercicio de la rutina aprobada se retiran y aparecen en datos faltantes. Una respuesta inválida, un error de red o un timeout no crea una propuesta. No se reintenta automáticamente para evitar envíos duplicados sin un nuevo consentimiento.
 
 ## Verificación y límites
 
